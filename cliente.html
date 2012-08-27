@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script  src='http://lenincasc.nodejitsu.com/socket.io/socket.io.js'></script>
+<script>
+
+$(function(){	 
+	var websocket = io.connect('http://lenincasc.nodejitsu.com');
+	var pic = new Image();
+	var canvas = document.querySelector('#miCanvas');
+	var ctx = canvas.getContext('2d');
+	websocket.on('setFrame', proc);
+		function proc(img){
+			console.log('recibiendo foto' + img)			
+			pic.src=img;
+			pic.addEventListener('load',function(){
+				ctx.drawImage(pic,0,0)
+				},false)
+		}
+	})
+	
+
+</script>
+<body>
+	<canvas id="miCanvas"></canvas>
+</body>
+</html>

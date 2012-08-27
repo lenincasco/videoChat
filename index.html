@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+</head>
+<body>
+	<video autoplay controls width="150px" heigth="150px;"></video>
+	<canvas id="miCanvas" width="150" heigth="150"></canvas>
+
+	<script src="http://lenincasc.nodejitsu.com/socket.io/socket.io.js"></script>
+	<script>
+	var websocket = io.connect('http://lenincasc.nodejitsu.com')
+	var bandera = 0
+		window.URL = window.URL || window.webkitURL;
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+		navigator.getUserMedia({audio: true, video:true}, function(vid){
+			document.querySelector('video').src = window.URL.createObjectURL(vid);
+			bandera = 1;
+		});
+
+		window.requestAnimeFrame = (function(callback){
+			return window.requestAnimeFrame ||
+			window.webkitrequestAnimeFrame ||
+			window.mozrequestAnimeFrame ||
+			window.orequestAnimeFrame ||
+			window.msrequestAnimeFrame ||
+			function (callback){
+				window.setTimeout(callback, 10000/100);
+			};
+		})();
+
+		function dFrame(ctx, video, canvas){
+			ctx.drawImage(video,0,0,150,150);
+			var dataURL = canvas.toDataURL('image/jpeg',0.2);
+			if(bandera!=0) websocket.emit('newFrame', dataURL);
+			requestAnimeFrame(function(){
+				dFrame(ctx,video,canvas);
+			})
+		}
+
+		window.addEventListener('load', init);
+		function init(){
+			var canvas = document.querySelector('#miCanvas');
+			var video = document.querySelector('video');
+			var ctx = canvas.getContext('2d');
+			dFrame(ctx,video,canvas);
+		}
+
+	</script>
+</body>
+</html>
